@@ -1,7 +1,7 @@
 {
-  "name": "final-project",
+  "name": "recipejs",
   "version": "1.0.0",
-  "description": "A JavaScript application that lets you search the NASA Photo API",
+  "description": "A JavaScript application that lets you search for a Recipe",
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html",
