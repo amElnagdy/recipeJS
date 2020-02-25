@@ -1,0 +1,10 @@
+#main {
+    padding: 30px;
+}
+#app {
+    margin-bottom: 50px;
+}
+
+.hidden {
+    display: none;
+}

@@ -37,7 +37,7 @@ function openVideo(e) {
 	setState(`video`, videoToPlay);
 
 	let markup = `<div id="video-player">
-<iframe width="720px" height="420px" src="https://www.youtube.com/embed/${videoToPlay.id.videoId}" /></div>`
+<iframe width="600px" height="500px" src="https://www.youtube.com/embed/${videoToPlay.id.videoId}" /></div>`
 
 	markup += `
 <div class="ui segment"><h2 class="ui header">${videoToPlay.snippet.title}</h2>
@@ -57,5 +57,14 @@ export function removeVideos() {
 	);
 	if (videoList) videoList.remove();
 	if (videoPlayer) videoPlayer.remove();
+}
+
+export function playDefVideo() {
+	const video = state.video;
+	let markup = `<div id="video-player">
+<iframe width="600px" height="500px" src="https://www.youtube.com/embed/${video.id.videoId}" /></div>`
+
+	const container = document.querySelector(`#selected-video`);
+	container.innerHTML = markup;
 
 }

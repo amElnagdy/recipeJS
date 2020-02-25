@@ -1,19 +1,21 @@
-import {state, setState} from "../../state";
+import {setState} from "../../state";
 import fetchRecipe from "../../recipeData";
 import fetchVideo from "../../recipeVideos";
 import singleRecipe, {removePreviousRecipe} from "../recipeDisplay";
-import {videoList} from "../videoList";
-import {init as initVideoList} from "../videoList";
-import {removeVideos} from "../videoList";
+import {videoList, removeVideos, init as initVideoList} from "../videoList";
+import {loadVideosClick} from "../recipeDisplay";
+
 
 export default function search() {
 
 	return `<div class="ui segment">
 	<h1>Search for a Recipe</h1>
     <form name="search" id="search" class="ui form">
-      <p><label for="search-field">Enter Search Term Below:</label></p>
+    <div class="field">
+      <label for="search-field">Enter Search Term Below:</label>
       <input id="search-field" name="search" type="search" />
-      <input type="submit" id="submit" value="Search" />
+      </div>
+      <input class="ui button" type="submit" id="submit" value="Search" />
     </form></div>`
 }
 
@@ -37,6 +39,7 @@ async function doSearch(e) {
 	//Display Recipe
 	const markup = singleRecipe();
 	document.querySelector(`#app`).insertAdjacentHTML(`beforeend`, markup);
+	loadVideosClick();
 
 	// Videos:
 	const videoMarkup = videoList();

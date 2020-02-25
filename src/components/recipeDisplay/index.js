@@ -1,4 +1,5 @@
 import {state} from "../../state";
+import {playDefVideo} from "../videoList";
 
 export default function singleRecipe() {
 	const recipe = state.recipe.recipe;
@@ -21,6 +22,7 @@ export default function singleRecipe() {
       </div>
     </div>
   </div>
+  <button class="load-videos ui button">Load Videos</button>
 </div>
 `;
 	return markup;
@@ -32,4 +34,15 @@ const recipeContainer = document.querySelector(
 `#recipe`
 );
 if (recipeContainer) recipeContainer.remove();
+}
+
+export function loadVideosClick() {
+const button = document.querySelector(`.load-videos`);
+button.addEventListener(`click`, loadVideos);
+button.addEventListener(`click`, playDefVideo)
+}
+
+function loadVideos() {
+const videosDiv = document.querySelector(`.hidden`)
+		videosDiv.classList.toggle(`hidden`)
 }

@@ -165,48 +165,10 @@ var _state = require("./state");
 function fetchVideo() {
   const YT_API_KEY = `AIzaSyAGe_FTMQJMizv6xwYFLtW-beRGMidEzlE`;
   const type = `video`;
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&key=${YT_API_KEY}&q=${_state.state.searchTerm}%20recipe`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=3&key=${YT_API_KEY}&q=${_state.state.searchTerm}%20recipe`;
   return fetch(url).then(res => res.json()).then(data => data.items).catch(err => console.log(err));
 }
-},{"./state":"src/state.js"}],"src/components/recipeDisplay/index.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = singleRecipe;
-exports.removePreviousRecipe = removePreviousRecipe;
-
-var _state = require("../../state");
-
-function singleRecipe() {
-  const recipe = _state.state.recipe.recipe;
-  let markup = `
-<div id="recipe" class="ui items">
-  <div class="item">
-    <a class="ui small image">
-      <img src="${recipe.image}" alt="${recipe.label}" />
-    </a>
-    <div class="content">
-      <a class="header">${recipe.label}</a>
-      <div class="description">
-      <ul>`;
-  const description = recipe.ingredientLines;
-  description.forEach(des => markup += `<li>${des}</li>`);
-  markup += `</ul>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-  return markup;
-}
-
-function removePreviousRecipe() {
-  const recipeContainer = document.querySelector(`#recipe`);
-  if (recipeContainer) recipeContainer.remove();
-}
-},{"../../state":"src/state.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./state":"src/state.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -287,6 +249,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.videoList = videoList;
 exports.init = init;
 exports.removeVideos = removeVideos;
+exports.playDefVideo = playDefVideo;
 
 var _state = require("../../state");
 
@@ -326,7 +289,7 @@ function openVideo(e) {
 
   (0, _state.setState)(`video`, videoToPlay);
   let markup = `<div id="video-player">
-<iframe width="720px" height="420px" src="https://www.youtube.com/embed/${videoToPlay.id.videoId}" /></div>`;
+<iframe width="600px" height="500px" src="https://www.youtube.com/embed/${videoToPlay.id.videoId}" /></div>`;
   markup += `
 <div class="ui segment"><h2 class="ui header">${videoToPlay.snippet.title}</h2>
 <p>${videoToPlay.snippet.description}</p></div>`;
@@ -340,7 +303,68 @@ function removeVideos() {
   if (videoList) videoList.remove();
   if (videoPlayer) videoPlayer.remove();
 }
-},{"../../state":"src/state.js","./index.css":"src/components/videoList/index.css"}],"src/components/search/index.js":[function(require,module,exports) {
+
+function playDefVideo() {
+  const video = _state.state.video;
+  let markup = `<div id="video-player">
+<iframe width="600px" height="500px" src="https://www.youtube.com/embed/${video.id.videoId}" /></div>`;
+  const container = document.querySelector(`#selected-video`);
+  container.innerHTML = markup;
+}
+},{"../../state":"src/state.js","./index.css":"src/components/videoList/index.css"}],"src/components/recipeDisplay/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = singleRecipe;
+exports.removePreviousRecipe = removePreviousRecipe;
+exports.loadVideosClick = loadVideosClick;
+
+var _state = require("../../state");
+
+var _videoList = require("../videoList");
+
+function singleRecipe() {
+  const recipe = _state.state.recipe.recipe;
+  let markup = `
+<div id="recipe" class="ui items">
+  <div class="item">
+    <a class="ui small image">
+      <img src="${recipe.image}" alt="${recipe.label}" />
+    </a>
+    <div class="content">
+      <a class="header">${recipe.label}</a>
+      <div class="description">
+      <ul>`;
+  const description = recipe.ingredientLines;
+  description.forEach(des => markup += `<li>${des}</li>`);
+  markup += `</ul>
+      </div>
+    </div>
+  </div>
+  <button class="load-videos ui button">Load Videos</button>
+</div>
+`;
+  return markup;
+}
+
+function removePreviousRecipe() {
+  const recipeContainer = document.querySelector(`#recipe`);
+  if (recipeContainer) recipeContainer.remove();
+}
+
+function loadVideosClick() {
+  const button = document.querySelector(`.load-videos`);
+  button.addEventListener(`click`, loadVideos);
+  button.addEventListener(`click`, _videoList.playDefVideo);
+}
+
+function loadVideos() {
+  const videosDiv = document.querySelector(`.hidden`);
+  videosDiv.classList.toggle(`hidden`);
+}
+},{"../../state":"src/state.js","../videoList":"src/components/videoList/index.js"}],"src/components/search/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -369,9 +393,11 @@ function search() {
   return `<div class="ui segment">
 	<h1>Search for a Recipe</h1>
     <form name="search" id="search" class="ui form">
-      <p><label for="search-field">Enter Search Term Below:</label></p>
+    <div class="field">
+      <label for="search-field">Enter Search Term Below:</label>
       <input id="search-field" name="search" type="search" />
-      <input type="submit" id="submit" value="Search" />
+      </div>
+      <input class="ui button" type="submit" id="submit" value="Search" />
     </form></div>`;
 }
 
@@ -393,7 +419,8 @@ async function doSearch(e) {
   //Display Recipe
 
   const markup = (0, _recipeDisplay.default)();
-  document.querySelector(`#app`).insertAdjacentHTML(`beforeend`, markup); // Videos:
+  document.querySelector(`#app`).insertAdjacentHTML(`beforeend`, markup);
+  (0, _recipeDisplay.loadVideosClick)(); // Videos:
 
   const videoMarkup = (0, _videoList.videoList)();
   document.querySelector(`#videos`).insertAdjacentHTML(`beforeend`, videoMarkup);
@@ -443,7 +470,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61840" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51719" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
