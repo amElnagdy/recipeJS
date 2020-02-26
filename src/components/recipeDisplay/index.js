@@ -10,7 +10,7 @@ export default function singleRecipe() {
       <img src="${recipe.image}" alt="${recipe.label}" />
     </a>
     <div class="content">
-      <a class="header">${recipe.label}</a>
+      <h2 class="ui header">${recipe.label}</h2>
       <div class="description">
       <ul>`;
 	const description = recipe.ingredientLines;
@@ -28,12 +28,39 @@ export default function singleRecipe() {
 	return markup;
 }
 
+export function recipeDetails() {
+	const recipe = state.recipe.recipe;
+const markup = `
+<h2 class="ui header">Nutrition Facts</h2>
+<table class="ui celled table">
+  <thead>
+    <tr><th>Calories</th>
+    <th>Fat</th>
+    <th>Sugar</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td data-label="calroeis">${parseInt(recipe.calories)}</td>
+      <td data-label="fat">${parseInt(recipe.totalNutrients.FAT.quantity)}</td>
+      <td data-label="sugare">${parseInt(recipe.totalNutrients.SUGAR.quantity)}</td>
+    </tr>
+  </tbody>
+</table>`;
+
+return markup;
+}
+
 
 export function removePreviousRecipe() {
 const recipeContainer = document.querySelector(
 `#recipe`
 );
 if (recipeContainer) recipeContainer.remove();
+
+	const recipeDetailsContainer = document.querySelector(
+		`#details`
+	);
+	if (recipeDetailsContainer) recipeDetailsContainer.innerHTML=``;
 }
 
 export function loadVideosClick() {
@@ -43,6 +70,6 @@ button.addEventListener(`click`, playDefVideo)
 }
 
 function loadVideos() {
-const videosDiv = document.querySelector(`.hidden`)
-		videosDiv.classList.toggle(`hidden`)
+const videosDiv = document.querySelector(`#videos-container`)
+		videosDiv.classList.toggle(`hidden`);
 }

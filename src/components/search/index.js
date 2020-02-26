@@ -1,7 +1,7 @@
 import {setState} from "../../state";
 import fetchRecipe from "../../recipeData";
 import fetchVideo from "../../recipeVideos";
-import singleRecipe, {removePreviousRecipe} from "../recipeDisplay";
+import singleRecipe, {recipeDetails, removePreviousRecipe} from "../recipeDisplay";
 import {videoList, removeVideos, init as initVideoList} from "../videoList";
 import {loadVideosClick} from "../recipeDisplay";
 
@@ -28,21 +28,60 @@ async function doSearch(e) {
 	e.preventDefault();
 	removePreviousRecipe();
 	removeVideos();
+
+	//fix videos list keep showing while doing another search
+	const videosDiv = document.querySelector(`#videos-container`)
+	if (!videosDiv.classList.contains(`hidden`)) videosDiv.classList.add(`hidden`);
+
 	const term = document.querySelector(`#search-field`).value.toLowerCase();
 	setState(`searchTerm`, term);
 
+	loadSpinner();
+
 	let [recipe, videos] = await Promise.all([fetchRecipe(), fetchVideo()]);
-	setState(`recipe`, recipe);
+	if (recipe)
+	{setState(`recipe`, recipe);}
 	setState(`videos`, videos);
 	setState(`video`, videos[0]); // Assign the first video to state.video
 
+
+	removeSpinner();
+
 	//Display Recipe
-	const markup = singleRecipe();
-	document.querySelector(`#app`).insertAdjacentHTML(`beforeend`, markup);
-	loadVideosClick();
+
+	if (recipe != null) {
+		const markup = singleRecipe();
+		const recipeDetailsMarkup = recipeDetails();
+		// document.querySelector(`#app`).insertAdjacentHTML(`beforeend`, markup);
+		document.querySelector(`#app`).innerHTML = markup;
+		document.querySelector(`#details`).innerHTML = recipeDetailsMarkup;
+
+
+	//Display a button to load videos
+	loadVideosClick();}
 
 	// Videos:
 	const videoMarkup = videoList();
 	document.querySelector(`#videos`).insertAdjacentHTML(`beforeend`, videoMarkup);
 	initVideoList();
+}
+
+function loadSpinner() {
+
+	const markup = `<div id="spinner">
+  <div class="ui inverted active dimmer">
+    <div class="ui massive text loader">Fetching your recipe..</div>
+  </div>
+  <p></p>
+  <p></p>
+  <p></p>
+</div>`
+	document.querySelector(`#main`).insertAdjacentHTML(`beforeend`, markup);
+
+}
+
+function removeSpinner() {
+	const spinner = document.querySelector(`#spinner`);
+	spinner.remove();
+
 }

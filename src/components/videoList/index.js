@@ -39,10 +39,6 @@ function openVideo(e) {
 	let markup = `<div id="video-player">
 <iframe width="600px" height="500px" src="https://www.youtube.com/embed/${videoToPlay.id.videoId}" /></div>`
 
-	markup += `
-<div class="ui segment"><h2 class="ui header">${videoToPlay.snippet.title}</h2>
-<p>${videoToPlay.snippet.description}</p></div>`;
-
 	const container = document.querySelector(`#selected-video`);
 	container.innerHTML = markup;
 
